@@ -1,0 +1,93 @@
+# Settings for the portfolio site.
+#
+# Every public repository on GitHub shows up automatically. This file only
+# changes how things look: hide a repo, feature it, rename it, or describe it
+# better than its GitHub description. Change anything here, push, and the site
+# rebuilds in about a minute.
+
+[profile]
+name = "Harsh Kumar"
+github = "Harsh-0024"
+headline = "I build the tools I actually use."
+intro = """
+Workout Logger, Time Tracker Pro and my focus timer aren't demos. I use them \
+every day, and so do my friends. I build whatever makes life easier, faster or \
+more fun, then I put it out there.\
+"""
+goal = """
+Where I'm headed: see a problem, build the tool, ship it. And understand AI the \
+way a mechanic understands an engine.\
+"""
+
+[site]
+# Commits by these names count as mine. Claude sessions work for me, so their
+# commits count too. In forks, only these names' commits are counted, so the
+# page shows exactly what I added.
+my_names = ["Harsh 24", "harsh24", "Harsh Kumar", "harsh-0824", "Claude"]
+
+# Repos that are left off the site entirely.
+hide = [
+  "A-exp-story",            # an experiment
+  "Harsh-0024",             # GitHub profile config
+  "workout-logger-history", # the old single-project page; this site replaces it
+]
+
+# Shown first, as large cards, in this order.
+featured = ["workout_logger_", "Time-Tracker-Pro", "Pomodoro-timer"]
+
+# One section per repo, keyed by the repo's name on GitHub. Every field is optional:
+#   name     the title to show instead of the repo name
+#   tagline  one or two sentences for the cards and the project page
+#   live     a URL where it runs; GitHub Pages sites are found automatically
+#   stack    what it's built with, shown as small labels
+
+[projects.workout_logger_]
+name = "Workout Logger"
+tagline = "Paste in a workout and it's logged. Pull up today's plan, track your strength over time, and keep logging offline at the gym. Works with Apple Shortcuts and backs itself up every night."
+live = "https://workoutlogger-production-7f91.up.railway.app/"
+stack = ["Python", "Flask", "PostgreSQL", "JavaScript", "PWA", "GitHub Actions"]
+
+[projects.Time-Tracker-Pro]
+name = "Time Tracker Pro"
+tagline = "Where does my time actually go? Logs from iOS Shortcuts land in a dashboard that sorts every hour into Work, Necessity, Soul, Rest or Waste, with a weekly calendar and deep-work analytics."
+stack = ["Python", "Flask", "SQLite", "pandas", "iOS Shortcuts"]
+
+[projects.Pomodoro-timer]
+name = "Muhurata Focus Timer"
+tagline = "A focus timer built on ancient Indian time units: one Muhurat is 48 minutes, one Ghadi is 24. Eight levels from Agaman to Ekagra, a history dashboard, and a one-line install. Not a Pomodoro clone."
+stack = ["Python", "JavaScript", "Local-first"]
+
+[projects.Protein_comparison]
+name = "Protein Per Rupee"
+tagline = "Which protein gives the most for your money? An interactive page that compares protein sources and blends by value."
+stack = ["HTML", "JavaScript"]
+
+[projects.real-time-voice-translator]
+name = "Real-time Voice Translator"
+tagline = "Speak in one language, hear it in another. Speech-to-speech translation across 22 languages with Google and Sarvam engines and a desktop UI."
+stack = ["Python", "SpeechRecognition", "gTTS", "tkinter"]
+
+[projects.Handgrip_system]
+name = "Handgrip System"
+tagline = "Guided forearm training with handgrips. The app works out the sets in the background; you just follow along."
+stack = ["Python", "Flask"]
+
+[projects.blog_website_project]
+name = "Blog Website"
+tagline = "My first fully working project: a blog with posts, accounts and forms."
+stack = ["Python", "Flask"]
+
+[projects.Python_Learning]
+name = "Python Learning"
+tagline = "Practice ground for Python and Flask."
+stack = ["Python", "Flask"]
+
+[projects.My-first-online-resume]
+name = "First Online Résumé"
+tagline = "My first web page: a résumé in pure HTML."
+stack = ["HTML"]
+
+[projects.portfolio-website]
+name = "First Portfolio Site"
+tagline = "Learning to put a website on the internet with GitHub Pages."
+stack = ["HTML", "CSS"]

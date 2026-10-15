@@ -1,0 +1,493 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F4F1; --raised:#FFFFFF; --ink:#16181B; --ink-2:#4A4F57; --muted:#767B83;
+  --line:#DCDFD9; --line-2:#E8EAE5; --hover:#EAE8DF; --frame:#E6E7E2;
+  --gold:#9A6F08; --gold-ink:#7A5806; --gold-soft:#EFE3C2;
+  --h0:#E2E5DF; --h1:#F0DDA8; --h2:#E0BC5C; --h3:#C39222; --h4:#86640D;
+  --add:#2F7A4A; --del:#B1413A; --tick:#B8860B;
+  --card-shadow:0 1px 2px rgba(22,24,27,.04),0 12px 32px -18px rgba(22,24,27,.25);
+  --sans:"Archivo",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#111316; --raised:#181B1F; --ink:#ECEAE4; --ink-2:#BDBFC2; --muted:#8B8F95;
+    --line:#2A2E34; --line-2:#1F2226; --hover:#1D1B16; --frame:#22262B;
+    --gold:#E2B74D; --gold-ink:#E9C261; --gold-soft:#2F2716;
+    --h0:#1F2328; --h1:#4A3E1E; --h2:#7E6526; --h3:#B8912F; --h4:#EFC75A;
+    --add:#63BD85; --del:#E47C72; --tick:#D9AE45;
+    --card-shadow:0 1px 0 rgba(255,255,255,.03),0 16px 40px -20px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111316; --raised:#181B1F; --ink:#ECEAE4; --ink-2:#BDBFC2; --muted:#8B8F95;
+  --line:#2A2E34; --line-2:#1F2226; --hover:#1D1B16; --frame:#22262B;
+  --gold:#E2B74D; --gold-ink:#E9C261; --gold-soft:#2F2716;
+  --h0:#1F2328; --h1:#4A3E1E; --h2:#7E6526; --h3:#B8912F; --h4:#EFC75A;
+  --add:#63BD85; --del:#E47C72; --tick:#D9AE45;
+  --card-shadow:0 1px 0 rgba(255,255,255,.03),0 16px 40px -20px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:28px;padding-block:28px 96px;display:flex;flex-direction:column;gap:96px}
+@media (max-width:640px){.wrap{padding-inline:20px;padding-block:20px 72px;gap:72px}}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+/* Top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:15px;text-decoration:none;font-variation-settings:"wdth" 110}
+.mark{width:26px;height:26px;border-radius:7px;background:#111316;display:grid;place-items:center;flex:none}
+.mark i{width:10px;height:10px;border-radius:50%;background:#E2B74D;box-shadow:0 0 0 2.5px #111316,0 0 0 4.5px #E2B74D}
+.top-r{display:flex;align-items:center;gap:18px}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--add);position:relative}
+.live i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--add);animation:pulse 2.4s ease-out infinite}
+.live.stale i,.live.stale i::after{background:var(--muted);animation:none}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(3);opacity:0}}
+.gh{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;text-decoration:none;color:var(--ink-2)}
+.gh:hover{color:var(--ink)}
+@media (max-width:640px){.live{display:none}}
+
+/* Hero */
+.hero{display:flex;flex-direction:column;gap:26px;padding-top:40px}
+@media (max-width:640px){.hero{padding-top:16px;gap:22px}}
+.hello{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.hello b{color:var(--ink);font-weight:700}
+.hero h1{font-size:clamp(44px,8.6vw,92px);line-height:.92;font-weight:800;font-variation-settings:"wdth" 125;letter-spacing:-.025em;max-width:11ch}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.intro{font-size:clamp(17px,2.1vw,20px);line-height:1.55;color:var(--ink-2);max-width:40ch}
+.goal{font-size:15.5px;line-height:1.6;color:var(--muted);max-width:52ch;padding-left:16px;border-left:2px solid var(--gold)}
+.cta{display:flex;flex-wrap:wrap;gap:12px;padding-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:14px;font-weight:600;padding:11px 20px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s,opacity .15s}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.primary:hover{opacity:.88}
+.btn.sm{padding:8px 14px;font-size:13px}
+.btn.quiet{border-color:transparent;padding-inline:8px;color:var(--ink-2)}
+.btn.quiet:hover{color:var(--ink)}
+
+/* Numbers */
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:32px 16px;padding-top:36px;border-top:1px solid var(--line)}
+.n{display:flex;flex-direction:column;gap:3px}
+.n .v{font-size:44px;font-weight:700;font-variation-settings:"wdth" 112;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.n .v small{font-size:17px;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:3px}
+.n .k{font-size:13px;color:var(--muted)}
+.n.wide{grid-column:span 2}
+.n .v.a{color:var(--add)} .n .v.d{color:var(--del)}
+@media (max-width:640px){.nums{grid-template-columns:1fr 1fr;gap:26px 16px}.n .v{font-size:36px}.n.wide{grid-column:span 1}.n.wide .v{font-size:28px;font-variation-settings:"wdth" 100}}
+
+/* Sections */
+section{display:flex;flex-direction:column;gap:28px;scroll-margin-top:24px}
+.sh{display:flex;flex-direction:column;gap:8px;max-width:60ch}
+h2{font-size:clamp(24px,3.2vw,30px);font-weight:750;font-variation-settings:"wdth" 118;letter-spacing:-.015em;line-height:1.1}
+.sh p{color:var(--muted);font-size:15px}
+
+/* Featured cards */
+.feats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{background:var(--raised);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--card-shadow);transition:transform .25s ease,box-shadow .25s ease}
+.card:hover{transform:translateY(-2px)}
+.card.lead{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+.shot{display:block;position:relative;background:var(--frame);padding:14px 14px 0;text-decoration:none;overflow:hidden}
+.card.lead .shot{padding:22px 0 0 22px}
+.frame{border-radius:10px 10px 0 0;overflow:hidden;background:#0d0f12;box-shadow:0 0 0 1px rgba(0,0,0,.18),0 10px 30px -12px rgba(0,0,0,.45);aspect-ratio:16/10;position:relative}
+.card.lead .frame{border-radius:10px 0 0 0;height:100%;aspect-ratio:auto;min-height:300px}
+.bar{height:22px;background:#1b1e23;display:flex;align-items:center;gap:6px;padding:0 10px}
+.bar i{width:7px;height:7px;border-radius:50%;background:#3a3f47}
+.bar span{margin-left:8px;font-family:var(--mono);font-size:10.5px;color:#7d828a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.frame img{display:block;width:100%;height:calc(100% - 22px);object-fit:cover;object-position:top center;transition:transform .6s ease}
+.card:hover .frame img{transform:scale(1.015)}
+.cover{position:absolute;inset:22px 0 0 0;display:none;align-items:flex-end;padding:22px;background:radial-gradient(120% 90% at 85% 0%,color-mix(in srgb,var(--c) 45%,#111316) 0%,#111316 62%)}
+.cover b{font-size:clamp(28px,4vw,42px);line-height:.95;font-weight:800;font-variation-settings:"wdth" 125;color:#ECEAE4;letter-spacing:-.02em;max-width:9ch}
+.frame.noshot img{display:none}
+.frame.noshot .cover{display:flex}
+.cbody{padding:22px 24px 24px;display:flex;flex-direction:column;gap:14px;flex:1}
+.card.lead .cbody{padding:30px 30px 28px;justify-content:center}
+.ctitle{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.card h3{font-size:22px;font-weight:750;font-variation-settings:"wdth" 112;letter-spacing:-.01em;line-height:1.15}
+.card.lead h3{font-size:28px}
+.card h3 a{text-decoration:none}
+.card h3 a:hover{color:var(--gold-ink)}
+.use{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-ink);white-space:nowrap}
+.card p.t{color:var(--ink-2);font-size:15px;line-height:1.55}
+.stack{display:flex;flex-wrap:wrap;gap:6px}
+.stack span{font-size:12px;font-weight:600;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.cmeta{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cmeta b{color:var(--ink);font-weight:600}
+.cact{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px}
+@media (max-width:820px){
+  .feats{grid-template-columns:1fr}
+  .card.lead{grid-template-columns:minmax(0,1fr)}
+  .card.lead .shot{padding:14px 14px 0}
+  .card.lead .frame{border-radius:10px 10px 0 0;aspect-ratio:16/10;min-height:0}
+  .card.lead .cbody{padding:22px 24px 24px}
+  .card.lead h3{font-size:24px}
+}
+
+/* More projects */
+.plist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 24px;align-items:center;padding:18px 4px;border-bottom:1px solid var(--line-2);text-decoration:none;border-radius:8px;transition:background .15s}
+.prow:hover{background:var(--hover)}
+.prow .pn{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.prow .pn b{font-size:16.5px;font-weight:650}
+.badge{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.badge.live-b{color:var(--add);border-color:color-mix(in srgb,var(--add) 40%,transparent)}
+.prow .pt{grid-column:1;font-size:14px;color:var(--muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prow .pm{grid-column:2;grid-row:1/span 2;display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ldot{display:inline-flex;align-items:center;gap:6px}
+.ldot i{width:8px;height:8px;border-radius:50%}
+@media (max-width:640px){
+  .prow{grid-template-columns:1fr;padding:16px 4px}
+  .prow .pm{grid-column:1;grid-row:auto;flex-direction:row;gap:14px;align-items:center}
+}
+
+/* Timeline */
+.tl{position:relative;display:flex;flex-direction:column}
+.tl-axis{position:relative;height:22px;margin-left:var(--lab);font-size:11.5px;color:var(--muted)}
+.tl-axis span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.tl-rows{position:relative}
+.tl-grid{position:absolute;top:0;bottom:0;left:var(--lab);right:0;pointer-events:none}
+.tl-grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--line-2)}
+.tl-grid i.yr{background:var(--line)}
+.tl-grid i.now{background:var(--gold);opacity:.6}
+.tl-row{display:grid;grid-template-columns:var(--lab) 1fr;align-items:center;min-height:40px;text-decoration:none;border-radius:8px;position:relative}
+.tl-row:hover{background:var(--hover)}
+.tl-row .lab{font-size:13.5px;font-weight:600;padding-right:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-row .lab small{display:block;font-size:11.5px;font-weight:400;color:var(--muted)}
+.track{position:relative;height:24px}
+.span{position:absolute;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:var(--line);min-width:4px}
+.ticks{position:absolute;inset:0}
+.ticks i{position:absolute;top:3px;bottom:3px;width:2px;margin-left:-1px;border-radius:1px;background:var(--tick)}
+@media (max-width:640px){
+  .tl{--lab:0px}
+  .tl-row{grid-template-columns:1fr;padding:6px 0}
+  .tl-row .lab{padding:0 0 2px}
+  .tl-row .lab small{display:inline;margin-left:6px}
+}
+
+/* Heatmap */
+.heat{display:flex;flex-direction:column;gap:8px}
+.heat-months{position:relative;height:16px;font-size:11.5px;color:var(--muted)}
+.heat-months span{position:absolute;top:0;white-space:nowrap}
+.heat-cells{display:grid;grid-template-rows:repeat(7,auto);grid-auto-flow:column;gap:3px}
+.cell{aspect-ratio:1;border-radius:22%;background:var(--h0);border:0;padding:0;display:block;max-width:100%}
+.cell[data-l="1"]{background:var(--h1)} .cell[data-l="2"]{background:var(--h2)}
+.cell[data-l="3"]{background:var(--h3)} .cell[data-l="4"]{background:var(--h4)}
+.cell.out{background:transparent}
+.cell.has{cursor:pointer}
+.cell.has:hover,.cell.sel{outline:2px solid var(--ink);outline-offset:1px}
+.cell.today{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--gold)}
+@media (max-width:640px){.heat-cells{gap:2px}}
+.heat-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 24px;margin:0}
+.facts div{display:flex;flex-direction:column;gap:1px}
+.facts dt{font-size:13px;color:var(--muted)}
+.facts dd{margin:0;font-size:16px;font-weight:600}
+.facts dd span{font-weight:400;color:var(--muted);font-size:14px}
+@media (max-width:640px){.facts{grid-template-columns:1fr 1fr}}
+.day{display:flex;flex-direction:column;border-top:1px solid var(--line-2)}
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0 8px}
+.dhead b{font-size:15px;font-weight:650}
+.chip{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:600;padding:5px 10px 5px 12px;border-radius:999px;background:var(--gold-soft);color:var(--gold-ink);border:0;cursor:pointer}
+.drow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 4px;border-bottom:1px solid var(--line-2);text-decoration:none;border-radius:6px}
+.drow:hover{background:var(--hover)}
+.drow .dp{font-size:12px;font-weight:700;color:var(--gold-ink);white-space:nowrap}
+.drow .dm{font-size:14.5px;line-height:1.4}
+.drow .dt{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:640px){.drow{grid-template-columns:minmax(0,1fr) auto}.drow .dp{grid-column:1/-1}}
+
+/* Languages */
+.lbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.lbar i{display:block;height:100%}
+.llist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px 24px}
+.llist div{display:flex;align-items:center;gap:10px;font-size:14px}
+.llist i{width:10px;height:10px;border-radius:50%;flex:none}
+.llist b{font-weight:600}
+.llist span{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums}
+
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;font-size:13px;color:var(--muted);padding-top:28px;border-top:1px solid var(--line)}
+.tip{position:fixed;z-index:30;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:8px;max-width:260px;transform:translate(-50%,calc(-100% - 12px))}
+.tip b{font-weight:700}
+
+/* Entrance: content is visible at rest; this only adds a soft rise on load */
+@media (prefers-reduced-motion:no-preference){
+  .rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+  .rise.d1{animation-delay:.06s}.rise.d2{animation-delay:.12s}.rise.d3{animation-delay:.18s}.rise.d4{animation-delay:.24s}
+  @keyframes rise{from{transform:translateY(10px)}to{transform:none}}
+}
+@media (prefers-reduced-motion:reduce){*,*::after{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="./"><span class="mark" aria-hidden="true"><i></i></span><span id="brand"></span></a>
+    <div class="top-r">
+      <span class="live" id="live" hidden><i></i><span id="live-t"></span></span>
+      <a class="gh" id="gh" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hello rise">Hi, I'm <b id="name"></b></div>
+    <h1 class="rise d1" id="headline"></h1>
+    <p class="intro rise d2" id="intro"></p>
+    <p class="goal rise d3" id="goal"></p>
+    <div class="cta rise d4">
+      <a class="btn primary" href="#tools">See what I've built</a>
+      <a class="btn" id="gh2" target="_blank" rel="noopener">GitHub profile</a>
+    </div>
+  </header>
+
+  <div class="nums" id="nums"></div>
+
+  <section id="tools" aria-labelledby="tools-h">
+    <div class="sh"><h2 id="tools-h">Tools I use every day</h2><p>Built for myself first. Each one solves a problem I actually had.</p></div>
+    <div class="feats" id="feats"></div>
+  </section>
+
+  <section id="more" aria-labelledby="more-h">
+    <div class="sh"><h2 id="more-h">More projects</h2><p id="more-sub"></p></div>
+    <div class="plist" id="plist"></div>
+  </section>
+
+  <section id="journey" aria-labelledby="j-h">
+    <div class="sh"><h2 id="j-h">The journey</h2><p id="j-sub"></p></div>
+    <div class="tl" id="tl" style="--lab:190px">
+      <div class="tl-axis" id="tl-axis"></div>
+      <div class="tl-rows" id="tl-rows"></div>
+    </div>
+  </section>
+
+  <section id="activity" aria-labelledby="a-h">
+    <div class="sh"><h2 id="a-h">The last 12 months</h2><p>Every day with a commit, across every project.</p></div>
+    <div class="heat">
+      <div class="heat-months" id="heat-months"></div>
+      <div class="heat-cells" id="heat"></div>
+      <div class="heat-foot"><span id="heat-note"></span><span class="legend">Less <i style="background:var(--h0)"></i><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i> More</span></div>
+    </div>
+    <div class="day" id="day" hidden></div>
+    <dl class="facts" id="facts"></dl>
+  </section>
+
+  <section id="langs" aria-labelledby="l-h">
+    <div class="sh"><h2 id="l-h">Languages</h2><p>By lines of code across all projects.</p></div>
+    <div class="lbar" id="lbar"></div>
+    <div class="llist" id="llist"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const PR = D.projects, ME = D.profile;
+const bySlug = Object.fromEntries(PR.map(p=>[p.slug,p]));
+const $ = id => document.getElementById(id);
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const DOW_L=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const fmt = n => n.toLocaleString('en-US');
+const compact = n => n>=1e5 ? Math.round(n/1e3)+'k' : n>=1e4 ? (n/1e3).toFixed(1).replace(/\.0$/,'')+'k' : fmt(n);
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const dayNum = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10))/864e5;
+const dayStr = n => new Date(n*864e5).toISOString().slice(0,10);
+const niceDate = (s, year) => `${+s.slice(8,10)} ${MONTHS[+s.slice(5,7)-1]}${year? ' '+s.slice(0,4):''}`;
+const monthYear = ds => `${MONTHS[+ds.slice(5,7)-1]} ${ds.slice(0,4)}`;
+const dowOf = s => (new Date(dayNum(s)*864e5).getUTCDay()+6)%7;
+const plural = (n, w) => `${fmt(n)} ${w}${n===1?'':'s'}`;
+const hour12 = h => h===0?'midnight':h<12?h+' am':h===12?'noon':(h-12)+' pm';
+const TODAY = D.today;
+const recent = p => dayNum(TODAY) - dayNum(p.last) <= 30;
+const span = p => `${monthYear(p.first)} – ${recent(p) ? 'now' : monthYear(p.last)}`;
+const LANG_COLORS = {Python:'#3572A5',JavaScript:'#f1e05a',TypeScript:'#3178c6',HTML:'#e34c26',CSS:'#663399',Shell:'#89e051',PowerShell:'#012456','Jupyter Notebook':'#DA5B0B',Jinja:'#a52a22',Mako:'#7e858d',Dockerfile:'#384d54',Batchfile:'#C1F12E',SCSS:'#c6538c',Procfile:'#3B2F63'};
+const langColor = l => LANG_COLORS[l] || '#8b8f95';
+const mainLang = p => Object.entries(p.langs).sort((a,b)=>b[1]-a[1])[0]?.[0];
+const ARROW = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2h6v6M10 2L2.5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Header ---------- */
+const ghUrl = `https://github.com/${D.owner}`;
+$('brand').textContent = ME.name; $('name').textContent = ME.name;
+$('gh').href = ghUrl; $('gh2').href = ghUrl;
+// The last word or two of the headline in gold
+const hw = ME.headline.trim().split(' ');
+$('headline').innerHTML = `${esc(hw.slice(0,-2).join(' '))} <em>${esc(hw.slice(-2).join(' '))}</em>`;
+$('intro').textContent = ME.intro.trim(); $('goal').textContent = ME.goal.trim();
+
+function ago(ms){
+  const m = Math.round(ms/6e4), h = Math.round(ms/36e5), d = Math.round(ms/864e5);
+  return m<1?'just now': m<60?plural(m,'minute')+' ago': h<24?plural(h,'hour')+' ago': plural(d,'day')+' ago';
+}
+function tickLive(){
+  const ms = Date.now() - Date.parse(D.builtIso); if(!(ms>=0)) return;
+  $('live').hidden=false; $('live-t').textContent = 'Updated ' + ago(ms);
+  $('live').classList.toggle('stale', ms > 2*864e5); $('live').title = D.built;
+}
+tickLive(); setInterval(tickLive, 6e4);
+
+/* ---------- Numbers ---------- */
+const totalCommits = PR.reduce((s,p)=>s+p.commits,0);
+const added = PR.reduce((s,p)=>s+p.added,0), removed = PR.reduce((s,p)=>s+p.removed,0);
+const langBytes = {}; PR.forEach(p=>Object.entries(p.langs).forEach(([l,b])=>langBytes[l]=(langBytes[l]||0)+b));
+const langTotal = Object.values(langBytes).reduce((a,b)=>a+b,0);
+const langs = Object.entries(langBytes).sort((a,b)=>b[1]-a[1]).map(([l,b])=>[l,b/langTotal*100]);
+const firstDay = PR.map(p=>p.first).sort()[0];
+$('nums').innerHTML = [
+  [PR.length,'','Projects'],
+  [fmt(totalCommits),'','Commits'],
+  [langs.filter(([,p])=>p>=1).length,'','Languages'],
+  [MONTHS[+firstDay.slice(5,7)-1], firstDay.slice(0,4),'Building since'],
+  [`+${fmt(added)}`,'','Lines of code written','a',1],
+  [`−${fmt(removed)}`,'','Lines rewritten or removed','d',1],
+].map(([v,u,k,c,w])=>`<div class="n${w?' wide':''}"><span class="v${c?' '+c:''}">${v}${u?`<small>${u}</small>`:''}</span><span class="k">${k}</span></div>`).join('');
+
+/* ---------- Featured ---------- */
+function host(u){ try{ return new URL(u).host; }catch{ return ''; } }
+function card(p, lead){
+  const shot = p.shot ? `<img src="${p.shot}" alt="Screenshot of ${esc(p.name)}" loading="${lead?'eager':'lazy'}" onerror="this.parentElement.classList.add('noshot')">` : '';
+  const page = `projects/${p.slug}/`;
+  return `<article class="card${lead?' lead':''}">
+    <a class="shot" href="${p.live?esc(p.live):page}" ${p.live?'target="_blank" rel="noopener"':''} aria-label="${p.live?'Open':'About'} ${esc(p.name)}" tabindex="-1">
+      <div class="frame${p.shot?'':' noshot'}"><div class="bar"><i></i><i></i><i></i><span>${esc(p.live?host(p.live):'github.com/'+D.owner+'/'+p.repo)}</span></div>${shot}<div class="cover" style="--c:${langColor(mainLang(p))}"><b>${esc(p.name)}</b></div></div>
+    </a>
+    <div class="cbody">
+      <div class="ctitle"><h3><a href="${page}">${esc(p.name)}</a></h3>${recent(p)?'<span class="use" title="Commits in the last 30 days">Active</span>':''}</div>
+      <p class="t">${esc(p.tagline)}</p>
+      <div class="stack">${p.stack.map(s=>`<span>${esc(s)}</span>`).join('')}</div>
+      <div class="cmeta"><span><b>${fmt(p.commits)}</b> commits</span><span><b>+${compact(p.added)}</b> lines</span><span>${span(p)}</span></div>
+      <div class="cact">${p.live?`<a class="btn primary sm" href="${esc(p.live)}" target="_blank" rel="noopener">Open the app ${ARROW}</a>`:''}<a class="btn sm" href="${page}">How it was built</a><a class="btn quiet sm" href="https://github.com/${D.owner}/${esc(p.repo)}" target="_blank" rel="noopener">Code ${ARROW}</a></div>
+    </div>
+  </article>`;
+}
+const feats = PR.filter(p=>p.featured), others = PR.filter(p=>!p.featured);
+$('feats').innerHTML = feats.map((p,i)=>card(p, i===0)).join('');
+if(!feats.length) $('tools').hidden = true;
+
+/* ---------- More projects ---------- */
+$('more-sub').textContent = `Experiments, practice and earlier work. ${others.length} more on GitHub.`;
+$('plist').innerHTML = others.map(p=>{
+  const l = mainLang(p);
+  return `<a class="prow" href="projects/${p.slug}/">
+    <span class="pn"><b>${esc(p.name)}</b>${p.fork?'<span class="badge">Fork, extended</span>':''}${p.live?'<span class="badge live-b">Live</span>':''}</span>
+    <span class="pt">${esc(p.tagline)}</span>
+    <span class="pm">${l?`<span class="ldot"><i style="background:${langColor(l)}"></i>${esc(l)}</span>`:''}<span>${plural(p.commits,'commit')} · ${p.last.slice(0,4)}</span></span>
+  </a>`;
+}).join('');
+if(!others.length) $('more').hidden = true;
+
+/* ---------- Tooltip ---------- */
+const tip = $('tip');
+function showTip(e, html){ tip.innerHTML=html; tip.hidden=false; moveTip(e); }
+function moveTip(e){ const x=Math.min(Math.max(e.clientX,140),innerWidth-140); tip.style.left=x+'px'; tip.style.top=e.clientY+'px'; }
+function hideTip(){ tip.hidden=true; }
+addEventListener('scroll', hideTip, {passive:true});
+
+/* ---------- Journey timeline ---------- */
+const t0 = dayNum(firstDay.slice(0,7)+'-01'), t1 = dayNum(TODAY)+10;
+const pos = ds => ((dayNum(ds)-t0)/(t1-t0)*100);
+const byStart = [...PR].sort((a,b)=>a.first.localeCompare(b.first));
+let axis='', grid='';
+for(let y=+firstDay.slice(0,4); y<=+TODAY.slice(0,4); y++){
+  for(let m=0; m<12; m+=3){
+    const ds = `${y}-${String(m+1).padStart(2,'0')}-01`;
+    if(dayNum(ds)<t0 || dayNum(ds)>t1) continue;
+    const x = pos(ds);
+    grid += `<i class="${m===0?'yr':''}" style="left:${x}%"></i>`;
+    if(m===0 || (y===+firstDay.slice(0,4) && axis==='')) axis += `<span style="left:${x}%">${m===0?y:MONTHS[m]+' '+y}</span>`;
+  }
+}
+grid += `<i class="now" style="left:${pos(TODAY)}%"></i>`;
+$('tl-axis').innerHTML = axis;
+$('tl-rows').innerHTML = `<div class="tl-grid">${grid}</div>` + byStart.map(p=>{
+  const ticks = Object.keys(p.days).map(ds=>`<i style="left:${pos(ds)}%;opacity:${Math.min(1,.35+p.days[ds]/8)}"></i>`).join('');
+  return `<a class="tl-row" href="projects/${p.slug}/" data-s="${p.slug}">
+    <span class="lab">${esc(p.name)}<small>${span(p)}</small></span>
+    <span class="track"><span class="span" style="left:${pos(p.first)}%;width:${Math.max(.4,pos(p.last)-pos(p.first))}%"></span><span class="ticks">${ticks}</span></span>
+  </a>`;
+}).join('');
+$('tl-rows').addEventListener('pointerover', e=>{ const r=e.target.closest('.tl-row'); if(!r || e.pointerType==='touch') return; const p=bySlug[r.dataset.s];
+  showTip(e, `<b>${esc(p.name)}</b><br>${span(p)} · ${plural(Object.keys(p.days).length,'day')} of work · ${plural(p.commits,'commit')}`); });
+$('tl-rows').addEventListener('pointermove', e=>{ if(!tip.hidden) moveTip(e); });
+$('tl-rows').addEventListener('pointerout', e=>{ if(!e.relatedTarget?.closest?.('.tl-row')) hideTip(); });
+const years = (dayNum(TODAY)-dayNum(firstDay))/365.25;
+$('j-sub').textContent = `${PR.length} projects over ${years>=1.5 ? Math.round(years*2)/2+' years' : Math.round(years*12)+' months'}, oldest at the top. Each mark is a day of work.`;
+
+/* ---------- Heatmap: last 12 months ---------- */
+const perDay = {}, perDayP = {};
+PR.forEach(p=>Object.entries(p.days).forEach(([ds,n])=>{ perDay[ds]=(perDay[ds]||0)+n; (perDayP[ds] ||= []).push([p.slug,n]); }));
+const end = dayNum(TODAY) + (6-dowOf(TODAY));
+const start = end - 53*7 + 1;
+const weeks = 53;
+const level = n => !n?0: n<=2?1: n<=5?2: n<=10?3: 4;
+const heat = $('heat');
+heat.style.gridTemplateColumns = `repeat(${weeks},1fr)`;
+let cells='', mh='', lastM=-1, yearCommits=0;
+for(let w=0; w<weeks; w++){
+  for(let d=0; d<7; d++){
+    const n = start + w*7 + d, ds = dayStr(n);
+    if(n>dayNum(TODAY)){ cells+='<i class="cell out"></i>'; continue; }
+    const v = perDay[ds]||0; yearCommits += v;
+    cells += v ? `<button type="button" class="cell has${ds===TODAY?' today':''}" data-l="${level(v)}" data-d="${ds}" aria-label="${plural(v,'commit')}, ${DOW_L[dowOf(ds)]} ${niceDate(ds,1)}"></button>`
+               : `<i class="cell${ds===TODAY?' today':''}" data-l="0" data-d="${ds}"></i>`;
+  }
+  const mon = dayStr(start+w*7), m=+mon.slice(5,7);
+  if(+mon.slice(8,10)<=7 && m!==lastM && w<weeks-2){ mh += `<span style="left:${w/weeks*100}%">${MONTHS[m-1]}</span>`; lastM=m; }
+}
+heat.innerHTML = cells; $('heat-months').innerHTML = mh;
+$('heat-note').textContent = `${fmt(yearCommits)} commits in the last 12 months`;
+heat.addEventListener('pointerover', e=>{ const c=e.target.closest('.cell[data-d]'); if(!c || e.pointerType==='touch') return; const ds=c.dataset.d;
+  const list = (perDayP[ds]||[]).map(([s,n])=>`${esc(bySlug[s].name)} · ${n}`).join('<br>');
+  showTip(e, `<b>${perDay[ds]? plural(perDay[ds],'commit') : 'No commits'}</b> · ${DOW[dowOf(ds)]} ${niceDate(ds,1)}${list?'<br>'+list:''}`); });
+heat.addEventListener('pointermove', e=>{ if(!tip.hidden) moveTip(e); });
+heat.addEventListener('pointerout', hideTip);
+let selDay = null;
+function showDay(ds){
+  selDay = ds;
+  document.querySelectorAll('.cell.sel').forEach(c=>c.classList.remove('sel'));
+  if(!ds){ $('day').hidden = true; return; }
+  document.querySelector(`.cell[data-d="${ds}"]`)?.classList.add('sel');
+  const rows = D.feed.filter(r=>r[3].slice(0,10)===ds);
+  $('day').innerHTML = `<div class="dhead"><b>${DOW_L[dowOf(ds)]}, ${niceDate(ds,1)} · ${plural(rows.length,'commit')}</b><button class="chip" type="button" id="day-x">Close <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>`
+    + rows.map(([s,h,H,dt,msg])=>`<a class="drow" href="https://github.com/${D.owner}/${esc(bySlug[s].repo)}/commit/${H}" target="_blank" rel="noopener"><span class="dp">${esc(bySlug[s].name)}</span><span class="dm">${esc(msg)}</span><span class="dt">${dt.slice(11,16)}</span></a>`).join('');
+  $('day').hidden = false;
+  $('day-x').addEventListener('click', ()=>showDay(null));
+}
+heat.addEventListener('click', e=>{ const c=e.target.closest('.cell.has'); if(!c) return; hideTip(); showDay(selDay===c.dataset.d ? null : c.dataset.d); });
+
+// Facts across everything
+const hrs = Array(24).fill(0), dw = Array(7).fill(0);
+D.feed.forEach(r=>{ hrs[+r[3].slice(11,13)]++; dw[dowOf(r[3].slice(0,10))]++; });
+const busiest = Object.entries(perDay).sort((a,b)=>b[1]-a[1])[0];
+const mostActive = [...PR].sort((a,b)=>Object.entries(b.days).filter(([d])=>dayNum(d)>=start).reduce((s,[,n])=>s+n,0)-Object.entries(a.days).filter(([d])=>dayNum(d)>=start).reduce((s,[,n])=>s+n,0))[0];
+$('facts').innerHTML = [
+  ['Most worked on', esc(mostActive.name), 'this year'],
+  ['Busiest day', plural(busiest[1],'commit'), niceDate(busiest[0],1)],
+  ['Favourite hour', hour12(hrs.indexOf(Math.max(...hrs))), D.zone],
+].map(([k,v,s])=>`<div><dt>${k}</dt><dd>${v}${s?` <span>${s}</span>`:''}</dd></div>`).join('');
+
+/* ---------- Languages ---------- */
+const shown = langs.filter(([,p])=>p>=1);
+const other = 100 - shown.reduce((s,[,p])=>s+p,0);
+const lrows = other>0.05 ? [...shown, ['Other', other]] : shown;
+$('lbar').innerHTML = lrows.map(([l,p])=>`<i style="width:${p}%;background:${l==='Other'?'var(--line)':langColor(l)}" title="${esc(l)} ${p.toFixed(1)}%"></i>`).join('');
+$('llist').innerHTML = lrows.map(([l,p])=>`<div><i style="background:${l==='Other'?'var(--line)':langColor(l)}"></i><b>${esc(l)}</b><span>${p<1?'<1':Math.round(p)}%</span></div>`).join('');
+
+$('foot').innerHTML = `<span>© ${TODAY.slice(0,4)} ${esc(ME.name)} · <a href="${ghUrl}" target="_blank" rel="noopener">github.com/${esc(D.owner)}</a></span><span>Rebuilt every night from GitHub. Last update ${esc(D.built)}.</span>`;
+})();
+</script>
+</body>

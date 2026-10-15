@@ -1,0 +1,79 @@
+# Nightly portfolio build.
+#
+# Lists every public repository on GitHub, reads each one's full history,
+# takes screenshots of the live apps, and publishes the site with GitHub Pages.
+# New repositories appear on their own. It runs every night, whenever main is
+# pushed (for example after editing portfolio.toml), and on demand from the
+# Actions tab using "Run workflow".
+name: Build Portfolio
+
+on:
+  schedule:
+    # Run every day at 21:00 UTC, which is 2:30 AM in India.
+    - cron: "0 21 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GitHub Pages needs these to publish. Repositories are only read.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# If a push lands while the nightly run is publishing, let the running one finish
+# and publish again afterwards instead of racing it.
+concurrency:
+  group: portfolio
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    name: Build and publish the portfolio
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      # Step 1: Download this repository: the settings, templates and scripts.
+      - name: Check out this repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install Python, the README renderer and the screenshot browser.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install the build tools
+        run: |
+          python -m pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      # Step 3: Read every public repository and write the pages into _site.
+      # The built-in token raises GitHub's rate limit; it can only read.
+      - name: Build the site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python build/build_site.py _site
+
+      # Step 4: Screenshot the live apps for the project cards. A site that is
+      # down only loses its screenshot; its card falls back to a drawn cover.
+      - name: Take screenshots of the live apps
+        continue-on-error: true
+        run: python build/screenshots.py _site
+
+      # Step 5: Hand the finished site to GitHub Pages and publish it.
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publish to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
