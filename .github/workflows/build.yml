@@ -15,11 +15,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# GitHub Pages needs these to publish. Repositories are only read.
+# GitHub Pages needs pages and id-token to publish. actions: write lets the last
+# step keep the nightly schedule switched on. Repositories are only read.
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 # If a push lands while the nightly run is publishing, let the running one finish
 # and publish again afterwards instead of racing it.
@@ -77,3 +79,17 @@ jobs:
       - name: Publish to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v4
+
+      # Step 6: GitHub pauses a scheduled workflow after 60 days without activity
+      # in this repository, and work happens in the project repos, not here.
+      # Re-enabling the workflow through the API resets that timer, so the
+      # nightly build never quietly stops. No commits are made.
+      - name: Keep the nightly schedule switched on
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -fsS -X PUT \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/build.yml/enable"
