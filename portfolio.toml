@@ -7,17 +7,34 @@
 
 [profile]
 name = "Harsh Kumar"
+# Shown in gold next to the name at the top of every page.
+subtitle = "Builds tools"
 github = "Harsh-0024"
-headline = "I build the tools I actually use."
-intro = """
-Workout Logger, Time Tracker Pro and my focus timer aren't demos. I use them \
-every day, and so do my friends. I build whatever makes life easier, faster or \
-more fun, then I put it out there.\
-"""
-goal = """
-Where I'm headed: see a problem, build the tool, ship it. And understand AI the \
-way a mechanic understands an engine.\
-"""
+email = "harsh242042004@gmail.com"
+# A photo of you, e.g. "assets/photo.jpg" (put the file in the assets folder).
+# Until there is one, that spot shows a square for every day since your first commit.
+photo = ""
+
+# The big line at the top. Words between ** and ** are set in bold.
+headline = "I build **the tools I actually use**."
+intro = "Workout Logger, Time Tracker Pro and my focus timer aren't demos. I use them every day, and so do my friends."
+
+# "Why I build", the section under the top.
+why = "Most of what I build started as a problem in my own day."
+why_intro = "I build what I like, and I share it. Some of it turns into a product, some of it is pure curiosity. All of it has to be:"
+values = [
+  { title = "Useful", text = "it saves real time on something I do every day, like logging a workout or seeing where my hours go." },
+  { title = "Fun to use", text = "calm, quick and good-looking, so I actually want to open it." },
+  { title = "Used", text = "if I'm not using it myself, it isn't finished." },
+]
+goal = "Where I'm headed: **see a problem, build the tool, ship it**. And understand AI the way a mechanic understands an engine."
+
+# "More about me", near the bottom. One entry per paragraph; ** for bold.
+about = [
+  "I started with a small Flask blog in late 2024 and haven't stopped since: a workout logger, a time tracker, a focus timer built on ancient Indian time units, and whatever else my days need next.",
+  "The long game is to be the kind of engineer who can look at any problem and turn it into a working tool. **A bit of a real-life Tony Stark**, minus the suit.",
+  "If you're working on something where that would help, I'd love to hear about it.",
+]
 
 [site]
 # Commits by these names count as mine. Claude sessions work for me, so their

@@ -1,0 +1,82 @@
+<style>
+.intro{padding-block:56px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.intro .h2{max-width:22ch}
+.intro p.sub{color:var(--muted);font-size:15.5px;max-width:48ch}
+.group{padding-block:56px 20px;display:flex;flex-direction:column;gap:30px}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filter{font-family:var(--mono);font-size:12.5px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:none;cursor:pointer;color:var(--ink-2)}
+.filter:hover{border-color:var(--ink)}
+.filter[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.empty{color:var(--muted)}
+</style>
+</head>
+<body>
+__HEADER__
+<main>
+  <div class="page"><hr class="rule"></div>
+  <section class="intro page">
+    <p class="label">All work</p>
+    <h1 class="h2" id="title"></h1>
+    <p class="sub" id="sub"></p>
+  </section>
+  <div class="page"><hr class="rule"></div>
+
+  <section class="group page" aria-labelledby="feat-h" id="feat-sec">
+    <p class="label" id="feat-h">Tools I use every day</p>
+    <div class="grid3" id="feat"></div>
+  </section>
+
+  <section class="group page" aria-labelledby="rest-h">
+    <div class="filters" id="filters" role="group" aria-label="Filter by language"></div>
+    <p class="label" id="rest-h">Everything else</p>
+    <div class="grid3" id="rest"></div>
+    <p class="empty" id="empty" hidden>Nothing here in that language yet.</p>
+  </section>
+</main>
+__FOOTER__
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const PR = D.projects;
+const $ = id => document.getElementById(id);
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const fmt = n => n.toLocaleString('en-US');
+const dayNum = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10))/864e5;
+const recent = p => dayNum(D.today) - dayNum(p.last) <= 30;
+const LANG_COLORS = {Python:'#3572A5',JavaScript:'#f1e05a',TypeScript:'#3178c6',HTML:'#e34c26',CSS:'#663399',Shell:'#89e051',PowerShell:'#012456','Jupyter Notebook':'#DA5B0B',Jinja:'#a52a22',Mako:'#7e858d',Dockerfile:'#384d54',Batchfile:'#C1F12E',SCSS:'#c6538c',Procfile:'#3B2F63'};
+const langColor = l => LANG_COLORS[l] || '#8b8f95';
+const mainLang = p => Object.entries(p.langs).sort((a,b)=>b[1]-a[1])[0]?.[0];
+function work(p){
+  const l = mainLang(p);
+  const img = p.shot ? `<img src="/${p.shot}" alt="" loading="lazy" onerror="this.parentElement.classList.replace('shot','noshot')">` : '';
+  return `<a class="work" href="/projects/${p.slug}/" data-l="${esc(l||'')}">
+    <span class="pic ${p.shot?'shot':'noshot'}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span></span></span>
+    <h3><span>${esc(p.name)}</span><small>${p.fork?'fork · ':''}${recent(p)?'active':p.last.slice(0,4)}</small></h3>
+    <p>${esc(p.tagline)}</p>
+  </a>`;
+}
+const feats = PR.filter(p=>p.featured), rest = PR.filter(p=>!p.featured);
+const total = PR.reduce((s,p)=>s+p.commits,0);
+$('title').innerHTML = `Everything I've built, <strong>${PR.length} projects</strong> so far`;
+$('sub').textContent = `${fmt(total)} commits in all. Each page shows how the project was built, commit by commit.`;
+$('feat').innerHTML = feats.map(work).join('');
+if(!feats.length) $('feat-sec').hidden = true;
+$('rest').innerHTML = rest.map(work).join('');
+// Filter the rest by main language, when there is more than one
+const langs = [...new Set(rest.map(mainLang).filter(Boolean))];
+if(langs.length > 1){
+  $('filters').innerHTML = ['All', ...langs].map((l,i)=>`<button class="filter" type="button" data-l="${esc(l)}" aria-pressed="${i===0}">${esc(l)}</button>`).join('');
+  $('filters').addEventListener('click', e=>{
+    const b = e.target.closest('.filter'); if(!b) return;
+    document.querySelectorAll('.filter').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+    let shown = 0;
+    document.querySelectorAll('#rest .work').forEach(w=>{ const ok = b.dataset.l==='All' || w.dataset.l===b.dataset.l; w.hidden = !ok; if(ok) shown++; });
+    $('empty').hidden = shown>0;
+  });
+} else $('filters').hidden = true;
+})();
+</script>
+</body>

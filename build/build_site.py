@@ -39,6 +39,9 @@ DESCRIPTION = (
     f"{CONFIG['profile']['name']} builds tools for training, focus and time. Every project, "
     "commit and line of code from GitHub, rebuilt every night."
 )
+FONTS = ("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600"
+         "&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600"
+         "&family=IBM+Plex+Mono:wght@400;500&display=swap")
 # The tab icon: a gold ring around a gold dot, drawn inline so no image file is needed.
 FAVICON = (
     "data:image/svg+xml,"
@@ -88,6 +91,23 @@ def is_up(url: str) -> bool:
 
 # ---------- Reading one repository ----------
 
+# "Lines of code" counts only files that are code, so notes, chat exports, data
+# dumps and notebooks don't inflate it.
+CODE = {"py", "js", "mjs", "cjs", "ts", "tsx", "jsx", "html", "htm", "css", "scss", "sass", "less",
+        "sh", "bash", "zsh", "ps1", "bat", "sql", "jinja", "j2", "jinja2", "vue", "svelte", "swift",
+        "kt", "java", "go", "rs", "c", "h", "cpp", "hpp", "cs", "rb", "php", "r", "lua", "dart"}
+NOT_MINE = re.compile(r"(^|/)(node_modules|vendor|venv|\.venv|site-packages|dist|build)/|\.min\.")
+# A single file that gains (or loses) more lines than this in one commit was almost
+# certainly generated, vendored or pasted in (a CSS theme, a bundled library), not written.
+PASTED = 3000
+
+
+def is_code(path: str, changed: int) -> bool:
+    path = path.rstrip("}").split(" => ")[-1]
+    return (path.rsplit(".", 1)[-1].lower() in CODE and not NOT_MINE.search(path)
+            and changed <= PASTED)
+
+
 def read_commits(repo_dir: Path, only_mine: bool) -> list[dict]:
     """Every commit on every branch on GitHub, newest first.
 
@@ -110,7 +130,8 @@ def read_commits(repo_dir: Path, only_mine: bool) -> list[dict]:
             parts = line.split("\t")
             if len(parts) == 3:
                 files += 1
-                if parts[0] != "-":  # binary files show "-" instead of counts
+                # Binary files show "-" instead of counts.
+                if parts[0] != "-" and is_code(parts[2], max(int(parts[0]), int(parts[1]))):
                     added += int(parts[0])
                     removed += int(parts[1])
         commits.append({
@@ -200,15 +221,49 @@ def page(template: str, title: str, description: str, data: dict, url: str, imag
         '<meta property="og:type" content="website">',
         f'<meta property="og:url" content="{url}">',
         '<meta name="twitter:card" content="summary_large_image">',
-        '<meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)">',
-        '<meta name="theme-color" content="#111316" media="(prefers-color-scheme: dark)">',
+        '<meta name="theme-color" content="#F1F0E9" media="(prefers-color-scheme: light)">',
+        '<meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)">',
         f'<link rel="icon" href="{FAVICON}">',
         f'<link rel="canonical" href="{url}">',
     ]
     if image:
         head.append(f'<meta property="og:image" content="{image}">')
-    # Each template carries the rest of its <head> (fonts, styles) and its own </head><body>.
+    head += [
+        '<link rel="preconnect" href="https://fonts.googleapis.com">',
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+        f'<link rel="stylesheet" href="{FONTS}">',
+        "<style>", (TEMPLATES / "partials" / "base.css").read_text(encoding="utf-8"), "</style>",
+    ]
+    # Each template carries its own styles and its own </head><body>.
     return "\n".join(head) + "\n" + body + "\n</html>\n"
+
+
+def chrome(current: str, version: str, updated: str) -> dict:
+    """The shared header and footer, filled in for one page."""
+    profile = CONFIG["profile"]
+    email = profile.get("email", "")
+    values = {
+        "__NAME__": profile["name"], "__SUBTITLE__": profile.get("subtitle", ""),
+        "__GITHUB__": OWNER, "__TAGLINE__": re.sub(r"\*\*", "", profile["headline"]),
+        "__MAIL_LINK__": f'<a class="mail" href="mailto:{email}">{email}</a>' if email else "",
+        "__MAIL_ITEM__": f'<li><a href="mailto:{email}">Email</a></li>' if email else "",
+        "__WORK_CURRENT__": 'aria-current="page"' if current == "work" else "",
+        "__VERSION__": version[:7] or "local",
+        "__VERSION_URL__": f"https://github.com/{OWNER}/{OWNER}.github.io/commit/{version}" if version else f"https://github.com/{OWNER}",
+        "__UPDATED__": updated,
+    }
+    def fill(html: str) -> str:
+        for key, value in values.items():
+            html = html.replace(key, value)
+        return html
+    return {
+        "__HEADER__": fill((TEMPLATES / "partials" / "header.html").read_text(encoding="utf-8")),
+        "__FOOTER__": fill((TEMPLATES / "partials" / "footer.html").read_text(encoding="utf-8")),
+    }
+
+
+def ordinal(n: int) -> str:
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
 
 
 def main() -> None:
@@ -265,6 +320,12 @@ def main() -> None:
         "built": local_now.strftime(f"%-d %b %Y, %H:%M {zone}"), "builtIso": now.isoformat(),
         "today": local_now.date().isoformat(), "zone": zone,
     }
+    # "Built from 1a2b3c4 — Last updated: Saturday 17th October at 02:30", like a release note.
+    try:
+        version = os.environ.get("GITHUB_SHA") or git(ROOT, "rev-parse", "HEAD").strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        version = ""
+    updated = f"{local_now:%A} {ordinal(local_now.day)} {local_now:%B} at {local_now:%H:%M} {zone}"
 
     # Featured first in the order given, then everything else by most recent work.
     rank = {name: i for i, name in enumerate(FEATURED)}
@@ -297,7 +358,8 @@ def main() -> None:
         (out / "projects" / p["slug"]).mkdir(parents=True)
         (out / "projects" / p["slug"] / "index.html").write_text(page(
             "project.html", f"{p['name']} · {CONFIG['profile']['name']}", description, project_data, url,
-            f"{SITE}/{shot}" if shot else None, {"__README__": p["readme"]},
+            f"{SITE}/{shot}" if shot else None,
+            {"__README__": p["readme"], **chrome("project", version, updated)},
         ), encoding="utf-8")
 
     # A compact list of every commit, so the home page can show what happened on any day.
@@ -308,10 +370,19 @@ def main() -> None:
     home_data = {**stamp, "profile": CONFIG["profile"], "projects": summaries, "feed": feed,
                  "owner": OWNER}
     first_shot = next((s["slug"] for s in shots), None)
+    image = f"{SITE}/shots/{first_shot}.jpg" if first_shot else None
     (out / "index.html").write_text(page(
-        "home.html", f"{CONFIG['profile']['name']} · Projects", DESCRIPTION, home_data, f"{SITE}/",
-        f"{SITE}/shots/{first_shot}.jpg" if first_shot else None,
+        "home.html", CONFIG["profile"]["name"], DESCRIPTION, home_data, f"{SITE}/", image,
+        chrome("home", version, updated),
     ), encoding="utf-8")
+    (out / "work").mkdir()
+    (out / "work" / "index.html").write_text(page(
+        "work.html", f"Work · {CONFIG['profile']['name']}", DESCRIPTION,
+        {**stamp, "projects": summaries}, f"{SITE}/work/", image, chrome("work", version, updated),
+    ), encoding="utf-8")
+    # Anything in assets/ (a photo, for example) is published as it is.
+    if (ROOT / "assets").is_dir():
+        shutil.copytree(ROOT / "assets", out / "assets", ignore=shutil.ignore_patterns(".*"))
     (out / "shots").mkdir()
     (out / "shots.json").write_text(json.dumps(shots, indent=2), encoding="utf-8")
     print(f"Wrote {out}: {len(projects)} projects, {len(all_commits)} commits, built {stamp['built']}.")
