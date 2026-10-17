@@ -306,8 +306,8 @@ $('figures').innerHTML = [
   [fmt(totalCommits),'Commits'],
   [PR.length,'Projects'],
   [Object.keys(perDay).length,'Days of building'],
-  [`+${fmt(added)}`,'Lines of code written','a'],
-  [`−${fmt(removed)}`,'Lines rewritten or removed','d'],
+  [`+${fmt(added)}`,'Lines committed','a'],
+  [`−${fmt(removed)}`,'Lines removed','d'],
   [shownLangs.length,'Languages'],
 ].map(([v,k,c])=>`<div class="fig"><b class="${c||''}">${v}</b><span>${k}</span></div>`).join('');
 

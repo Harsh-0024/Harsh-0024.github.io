@@ -91,23 +91,6 @@ def is_up(url: str) -> bool:
 
 # ---------- Reading one repository ----------
 
-# "Lines of code" counts only files that are code, so notes, chat exports, data
-# dumps and notebooks don't inflate it.
-CODE = {"py", "js", "mjs", "cjs", "ts", "tsx", "jsx", "html", "htm", "css", "scss", "sass", "less",
-        "sh", "bash", "zsh", "ps1", "bat", "sql", "jinja", "j2", "jinja2", "vue", "svelte", "swift",
-        "kt", "java", "go", "rs", "c", "h", "cpp", "hpp", "cs", "rb", "php", "r", "lua", "dart"}
-NOT_MINE = re.compile(r"(^|/)(node_modules|vendor|venv|\.venv|site-packages|dist|build)/|\.min\.")
-# A single file that gains (or loses) more lines than this in one commit was almost
-# certainly generated, vendored or pasted in (a CSS theme, a bundled library), not written.
-PASTED = 3000
-
-
-def is_code(path: str, changed: int) -> bool:
-    path = path.rstrip("}").split(" => ")[-1]
-    return (path.rsplit(".", 1)[-1].lower() in CODE and not NOT_MINE.search(path)
-            and changed <= PASTED)
-
-
 def read_commits(repo_dir: Path, only_mine: bool) -> list[dict]:
     """Every commit on every branch on GitHub, newest first.
 
@@ -130,8 +113,8 @@ def read_commits(repo_dir: Path, only_mine: bool) -> list[dict]:
             parts = line.split("\t")
             if len(parts) == 3:
                 files += 1
-                # Binary files show "-" instead of counts.
-                if parts[0] != "-" and is_code(parts[2], max(int(parts[0]), int(parts[1]))):
+                # Every committed line counts, in every file. Binary files show "-" instead of counts.
+                if parts[0] != "-":
                     added += int(parts[0])
                     removed += int(parts[1])
         commits.append({

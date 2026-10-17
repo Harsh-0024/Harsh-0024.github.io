@@ -5,7 +5,7 @@ I build the tools I actually use.
 **See it:** https://harsh-0024.github.io/
 
 This repository builds that site. Every night a GitHub Action lists my public
-repositories, reads their full history (counting only real code toward lines of code), takes screenshots of the live apps, and
+repositories, reads their full history, takes screenshots of the live apps, and
 publishes a home page plus one page per project. A new public repo shows up on
 its own the next morning.
 
