@@ -87,6 +87,10 @@
 .facts dd{margin:0;font-size:16px;font-weight:500}
 .facts dd span{font-weight:400;color:var(--muted);font-size:14px}
 @media (max-width:700px){.facts{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.facts{grid-template-columns:1fr;gap:14px}}
+.heat.scroll{overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,transparent,#000 24px);mask-image:linear-gradient(to right,transparent,#000 24px)}
+.heat.scroll::-webkit-scrollbar{display:none}
+.heat.scroll .heat-foot{position:sticky;left:0;width:calc(100vw - 40px)}
 
 /* Disclosure */
 details.more{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -439,6 +443,14 @@ for(let w=0; w<weeks; w++){
 }
 heat.innerHTML = cells;
 $('heat-months').innerHTML = mh;
+// On a phone, a long project keeps readable squares and scrolls sideways, opening on the latest weeks
+if(matchMedia('(max-width:560px)').matches && weeks > 26){
+  const box = heat.parentElement, width = weeks*14;
+  box.classList.add('scroll');
+  heat.style.gridTemplateColumns = `repeat(${weeks},11px)`;
+  heat.style.width = $('heat-months').style.width = width + 'px';
+  requestAnimationFrame(()=>{ box.scrollLeft = box.scrollWidth; });
+}
 heat.addEventListener('pointerover', e=>{ const c=e.target.closest('.cell[data-d]'); if(!c || e.pointerType==='touch') return;
   const v=+c.dataset.v; showTip(e, `<b>${v? plural(v,'commit') : 'No commits'}</b> · ${DOW[dowOf(c.dataset.d)]} ${niceDate(c.dataset.d,1)}`); });
 heat.addEventListener('pointermove', e=>{ if(!tip.hidden) moveTip(e); });
