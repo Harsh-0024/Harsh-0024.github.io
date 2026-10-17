@@ -79,8 +79,9 @@ button{font:inherit;color:inherit}
 /* Work grid: image, title, one line */
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:52px 28px}
 @media (max-width:900px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.grid3{grid-template-columns:minmax(0,1fr);gap:44px}}
-.work{display:flex;flex-direction:column;gap:6px;text-decoration:none}
+@media (max-width:560px){.grid3{grid-template-columns:minmax(0,1fr);gap:0}}
+.work{display:flex;flex-direction:column;text-decoration:none}
+.work .txt{display:flex;flex-direction:column;gap:6px;min-width:0}
 .work .pic{display:block;aspect-ratio:16/10;overflow:hidden;background:var(--paper-2);position:relative;margin-bottom:12px}
 .work .pic img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .5s ease}
 .work:hover .pic img{transform:scale(1.025)}
@@ -95,6 +96,20 @@ button{font:inherit;color:inherit}
 .work h3 small{font-family:var(--mono);font-size:11.5px;font-weight:400;color:var(--muted);letter-spacing:.02em}
 .work:hover h3 span{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
 .work p{font-size:15px;line-height:1.5;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.work .pic picture{display:contents}
+.work .cover em{display:none}
+/* On phones the grid becomes a compact list: a small thumbnail beside the words */
+@media (max-width:560px){
+  .work{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;column-gap:16px;padding-block:18px;border-top:1px solid var(--line)}
+  .work .txt{gap:4px}
+  .grid3 > .work:last-child{border-bottom:1px solid var(--line)}
+  .work .pic{aspect-ratio:1;margin:0;border-radius:8px}
+  .work .pic .cover{padding:0;align-items:center;justify-content:center}
+  .work .pic .cover b,.work .pic .cover span{display:none}
+  .work .pic .cover em{display:block;font-family:var(--serif);font-style:normal;font-weight:500;font-size:30px;color:var(--ink-2)}
+  .work h3{font-size:16.5px}
+  .work p{font-size:14.5px;-webkit-line-clamp:2}
+}
 
 /* Footer */
 .site-foot{padding-block:0 56px;margin-top:110px}

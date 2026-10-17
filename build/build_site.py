@@ -11,7 +11,7 @@ rate limit (the Actions runner provides one).
 """
 
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import json
 import os
@@ -214,7 +214,10 @@ def page(template: str, title: str, description: str, data: dict, url: str, imag
     head += [
         '<link rel="preconnect" href="https://fonts.googleapis.com">',
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-        f'<link rel="stylesheet" href="{FONTS}">',
+        # The page paints straight away in fallback fonts and swaps when these arrive,
+        # instead of staying blank on a slow phone connection.
+        f'<link rel="preload" as="style" href="{FONTS}" onload="this.onload=null;this.rel=\'stylesheet\'">',
+        f'<noscript><link rel="stylesheet" href="{FONTS}"></noscript>',
         "<style>", (TEMPLATES / "partials" / "base.css").read_text(encoding="utf-8"), "</style>",
     ]
     # Each template carries its own styles and its own </head><body>.
@@ -346,8 +349,11 @@ def main() -> None:
         ), encoding="utf-8")
 
     # A compact list of every commit, so the home page can show what happened on any day.
+    # Only the last year is kept: that's all the heatmap can show, and it keeps the page light.
+    year_ago = (local_now - timedelta(days=372)).date().isoformat()
     feed = sorted(
-        ([p["slug"], c["h"], c["H"], c["d"][:16], c["s"]] for p in projects for c in p["commits"]),
+        ([p["slug"], c["h"], c["H"], c["d"][:16], c["s"]] for p in projects for c in p["commits"]
+         if c["d"][:10] >= year_ago),
         key=lambda row: row[3], reverse=True,
     )
     home_data = {**stamp, "profile": CONFIG["profile"], "projects": summaries, "feed": feed,

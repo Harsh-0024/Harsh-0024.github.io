@@ -51,11 +51,13 @@ const langColor = l => LANG_COLORS[l] || '#8b8f95';
 const mainLang = p => Object.entries(p.langs).sort((a,b)=>b[1]-a[1])[0]?.[0];
 function work(p){
   const l = mainLang(p);
-  const img = p.shot ? `<img src="/${p.shot}" alt="" loading="lazy" onerror="this.parentElement.classList.replace('shot','noshot')">` : '';
+  // Phones get the phone-sized screenshot; no screenshot means a cover with the name (initials on phones)
+  const img = p.shot ? `<picture><source media="(max-width:560px)" srcset="/${p.shot.replace(/\.jpg$/,'-phone.jpg')}"><img src="/${p.shot}" alt="" loading="lazy" onerror="this.closest('.pic').classList.replace('shot','noshot')"></picture>` : '';
+  const initials = p.name.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join('');
   return `<a class="work" href="/projects/${p.slug}/" data-l="${esc(l||'')}">
-    <span class="pic ${p.shot?'shot':'noshot'}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span></span></span>
-    <h3><span>${esc(p.name)}</span><small>${p.fork?'fork · ':''}${recent(p)?'active':p.last.slice(0,4)}</small></h3>
-    <p>${esc(p.tagline)}</p>
+    <span class="pic ${p.shot?'shot':'noshot'}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span><em aria-hidden="true">${esc(initials)}</em></span></span>
+    <div class="txt"><h3><span>${esc(p.name)}</span><small>${p.fork?'fork · ':''}${recent(p)?'active':p.last.slice(0,4)}</small></h3>
+    <p>${esc(p.tagline)}</p></div>
   </a>`;
 }
 const feats = PR.filter(p=>p.featured), rest = PR.filter(p=>!p.featured);

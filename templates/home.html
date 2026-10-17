@@ -16,7 +16,11 @@
 @media (max-width:760px){
   .hero{grid-template-columns:1fr;gap:40px;padding-bottom:56px}
   .hero-text{order:-1;padding-bottom:0}
-  .portrait{max-width:340px;max-height:none}
+  /* On phones the mosaic is a wide, short band so it doesn't fill the screen */
+  .portrait{max-height:none;aspect-ratio:4/3}
+  .days{inset:18px 18px 52px;gap:2px}
+  .days i{border-radius:18%}
+  .portrait figcaption{left:18px;right:18px;bottom:16px}
 }
 
 /* Sections */
@@ -61,7 +65,7 @@
 .facts dt{font-size:13px;color:var(--muted)}
 .facts dd{margin:0;font-size:16px;font-weight:500}
 .facts dd span{font-weight:400;color:var(--muted);font-size:14px}
-@media (max-width:560px){.facts{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.facts{grid-template-columns:1fr;gap:16px}}
 .day{display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .dhead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0 8px}
 .dhead b{font-size:15px;font-weight:600}
@@ -102,7 +106,8 @@
 @media (max-width:640px){
   .tl{--lab:0px}
   .tl-row{grid-template-columns:1fr;padding:6px 0}
-  .tl-row .lab{padding:2px 0}
+  .tl-row .lab{padding:2px 8px 2px 0;position:relative;z-index:1;justify-self:start;background:var(--paper)}
+  .tl-row:hover .lab{background:var(--hover)}
   .tl-row .lab small{display:inline;margin-left:8px}
 }
 
@@ -264,7 +269,8 @@ if(ME.photo){
     if(!W || !H) return;
     let best = 1, size = 0;
     for(let c=1; c<=n; c++){ const s = Math.min(W/c, H/Math.ceil(n/c)); if(s > size){ size = s; best = c; } }
-    box.style.gridTemplateColumns = `repeat(${best}, ${Math.floor(size-3)}px)`;
+    const gap = parseFloat(getComputedStyle(box).columnGap) || 3;
+    box.style.gridTemplateColumns = `repeat(${best}, ${Math.floor(size-gap)}px)`;
     box.style.justifyContent = 'center';
   };
   fit(); new ResizeObserver(fit).observe(portrait);
@@ -283,11 +289,13 @@ $('goal').innerHTML = bold(ME.goal);
 /* ---------- Recent work ---------- */
 function work(p){
   const l = mainLang(p);
-  const img = p.shot ? `<img src="/${p.shot}" alt="" loading="lazy" onerror="this.parentElement.classList.replace('shot','noshot')">` : '';
+  // Phones get the phone-sized screenshot; no screenshot means a cover with the name (initials on phones)
+  const img = p.shot ? `<picture><source media="(max-width:560px)" srcset="/${p.shot.replace(/\.jpg$/,'-phone.jpg')}"><img src="/${p.shot}" alt="" loading="lazy" onerror="this.closest('.pic').classList.replace('shot','noshot')"></picture>` : '';
+  const initials = p.name.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join('');
   return `<a class="work" href="/projects/${p.slug}/">
-    <span class="pic ${p.shot?'shot':'noshot'}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span></span></span>
-    <h3><span>${esc(p.name)}</span><small>${p.fork?'fork · ':''}${recent(p)?'active':p.last.slice(0,4)}</small></h3>
-    <p>${esc(p.tagline)}</p>
+    <span class="pic ${p.shot?'shot':'noshot'}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span><em aria-hidden="true">${esc(initials)}</em></span></span>
+    <div class="txt"><h3><span>${esc(p.name)}</span><small>${p.fork?'fork · ':''}${recent(p)?'active':p.last.slice(0,4)}</small></h3>
+    <p>${esc(p.tagline)}</p></div>
   </a>`;
 }
 const SHOW = 6;
@@ -311,9 +319,11 @@ $('figures').innerHTML = [
   [shownLangs.length,'Languages'],
 ].map(([v,k,c])=>`<div class="fig"><b class="${c||''}">${v}</b><span>${k}</span></div>`).join('');
 
-// Heatmap: the last 12 months
+// Heatmap: the last 12 months, or the last 6 on a phone so each day is big enough to see
+const phone = matchMedia('(max-width:560px)').matches;
+const weeks = phone ? 26 : 53;
 const end = dayNum(TODAY) + (6-dowOf(TODAY));
-const start = end - 53*7 + 1, weeks = 53;
+const start = end - weeks*7 + 1, yearStart = dayNum(TODAY) - 364;
 const heat = $('heat');
 heat.style.gridTemplateColumns = `repeat(${weeks},1fr)`;
 let cells='', mh='', lastM=-1, yearCommits=0;
@@ -329,7 +339,7 @@ for(let w=0; w<weeks; w++){
   if(+mon.slice(8,10)<=7 && m!==lastM && w<weeks-2){ mh += `<span style="left:${w/weeks*100}%">${MONTHS[m-1]}</span>`; lastM=m; }
 }
 heat.innerHTML = cells; $('heat-months').innerHTML = mh;
-$('heat-note').textContent = `${fmt(yearCommits)} commits in the last 12 months`;
+$('heat-note').textContent = `${fmt(yearCommits)} commits in the last ${phone ? '6' : '12'} months`;
 heat.addEventListener('pointerover', e=>{ const c=e.target.closest('.cell[data-d]'); if(!c || e.pointerType==='touch') return; const ds=c.dataset.d;
   const list = (perDayP[ds]||[]).map(([s,n])=>`${esc(bySlug[s].name)} · ${n}`).join('<br>');
   showTip(e, `<b>${perDay[ds]? plural(perDay[ds],'commit') : 'No commits'}</b> · ${DOW[dowOf(ds)]} ${niceDate(ds,1)}${list?'<br>'+list:''}`); });
@@ -352,7 +362,7 @@ heat.addEventListener('click', e=>{ const c=e.target.closest('.cell.has'); if(!c
 const hrs = Array(24).fill(0);
 D.feed.forEach(r=>{ hrs[+r[3].slice(11,13)]++; });
 const busiest = Object.entries(perDay).sort((a,b)=>b[1]-a[1])[0];
-const yearOf = p => Object.entries(p.days).filter(([d])=>dayNum(d)>=start).reduce((s,[,n])=>s+n,0);
+const yearOf = p => Object.entries(p.days).filter(([d])=>dayNum(d)>=yearStart).reduce((s,[,n])=>s+n,0);
 const mostActive = [...PR].sort((a,b)=>yearOf(b)-yearOf(a))[0];
 $('facts').innerHTML = [
   ['Most worked on', esc(mostActive.name), 'this year'],

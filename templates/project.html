@@ -12,6 +12,7 @@
 .p-main{display:flex;flex-direction:column;gap:36px;min-width:0}
 .p-shot{margin:0;background:var(--paper-2)}
 .p-shot img{display:block;width:100%;height:auto}
+@media (max-width:560px){.p-shot{max-width:300px;margin-inline:auto;border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}}
 .summary{font-size:17px;line-height:1.65;color:var(--ink-2);max-width:56ch}
 .p-side{display:flex;flex-direction:column;gap:28px;font-size:15px}
 .meta{display:flex;flex-direction:column;gap:10px}
@@ -384,7 +385,7 @@ if(P.fork){
   $('m-fork').innerHTML = `<a class="ul" href="https://github.com/${esc(P.parent||'')}" target="_blank" rel="noopener">${esc(P.parent||'another project')}</a><small>Only my own commits are counted here.</small>`;
 }
 $('m-updated').textContent = niceDate(last, 1);
-if(P.shot){ $('shot').hidden = false; $('shot').innerHTML = `<img src="/${esc(P.shot)}" alt="${esc(P.name)}, as it looks today" onerror="this.parentElement.hidden=true">`; }
+if(P.shot){ $('shot').hidden = false; $('shot').innerHTML = `<picture><source media="(max-width:560px)" srcset="/${esc(P.shot.replace(/\.jpg$/,'-phone.jpg'))}"><img src="/${esc(P.shot)}" alt="${esc(P.name)}, as it looks today" onerror="this.closest('figure').hidden=true"></picture>`; }
 // README: shown when there is one; long ones open with "Read more"
 const readme = $('readme');
 if(readme.textContent.trim()){
