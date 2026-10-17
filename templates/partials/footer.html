@@ -17,3 +17,24 @@
   </div>
   <p class="version">Built from <a href="__VERSION_URL__" target="_blank" rel="noopener">__VERSION__</a> — Last updated: __UPDATED__</p>
 </footer>
+<script>
+// Shared by every page: the header gains a hairline once you scroll, and sections
+// ease in as they come into view. Everything is fully visible without this.
+(function(){
+  const bar = document.getElementById('head-bar');
+  const onScroll = () => bar.classList.toggle('scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  // No reveal when the page opens at a section link, when motion is reduced, or without support
+  if(location.hash || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }), {rootMargin:'0px 0px -8% 0px'});
+  // Wait until the page has filled itself in, so positions are final
+  addEventListener('DOMContentLoaded', () => document.querySelectorAll('.reveal').forEach(el => {
+    if(el.getBoundingClientRect().top < innerHeight) return;  // already on screen: leave it be
+    el.classList.add('pending'); io.observe(el);
+  }));
+  // Safety net: nothing stays hidden, whatever happens with scrolling or timers
+  addEventListener('load', () => setTimeout(() => document.querySelectorAll('.reveal.pending:not(.in)').forEach(el => el.classList.add('in')), 4000));
+})();
+</script>

@@ -4,6 +4,8 @@
 :root[data-theme="dark"]{ --l1:#3987e5; --l2:#d95926; --l3:#9085e9; --l4:#199e70; --bar:var(--h3); --scrim:rgba(0,0,0,.6); }
 
 /* Title */
+.back-link{align-self:flex-start;font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none;margin-bottom:6px}
+.back-link:hover{color:var(--ink)}
 .p-head{padding-block:56px 48px;display:flex;flex-direction:column;gap:16px}
 .p-head .lede{font-size:clamp(17px,1.8vw,19px);line-height:1.55;color:var(--ink-2);max-width:46ch}
 
@@ -12,7 +14,7 @@
 .p-main{display:flex;flex-direction:column;gap:36px;min-width:0}
 .p-shot{margin:0;background:var(--paper-2)}
 .p-shot img{display:block;width:100%;height:auto}
-@media (max-width:560px){.p-shot{max-width:300px;margin-inline:auto;border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}}
+@media (max-width:560px){.p-shot{max-width:300px;margin-inline:auto;border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}.p-shot img{max-height:62vh;object-fit:cover;object-position:top center}}
 .summary{font-size:17px;line-height:1.65;color:var(--ink-2);max-width:56ch}
 .p-side{display:flex;flex-direction:column;gap:28px;font-size:15px}
 .meta{display:flex;flex-direction:column;gap:10px}
@@ -35,6 +37,14 @@
   .side-links{flex-direction:row;flex-wrap:wrap}
 }
 @media (max-width:420px){.p-side{grid-template-columns:1fr}}
+/* On phones the app itself comes first, then its facts, then the story */
+@media (max-width:560px){
+  .p-head{padding-block:28px 36px}
+  .p-body{padding-block:36px 48px;gap:36px}
+  .p-main{display:contents}
+  .p-shot{order:-2}
+  .p-side{order:-1}
+}
 
 /* README */
 .readme{position:relative;font-size:16.5px;line-height:1.7;color:var(--ink-2);overflow-wrap:anywhere}
@@ -220,6 +230,7 @@ __HEADER__
 <main>
   <div class="page"><hr class="rule"></div>
   <section class="p-head page">
+    <a class="back-link" href="/work/"><span aria-hidden="true">←</span> All work</a>
     <p class="label" id="kind"></p>
     <h1 class="display" id="title"></h1>
     <p class="lede" id="lede"></p>
@@ -249,7 +260,7 @@ __HEADER__
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="blk page" aria-labelledby="act-h">
+  <section class="blk page reveal" aria-labelledby="act-h">
     <div class="sh"><p class="label">Activity</p><h2 class="h2" id="act-h">How it was built, <strong>day by day</strong></h2><p id="act-sub"></p></div>
     <div class="heat">
       <div class="heat-months" id="heat-months"></div>
@@ -269,7 +280,7 @@ __HEADER__
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="blk page" aria-labelledby="br-h">
+  <section class="blk page reveal" aria-labelledby="br-h">
     <div class="sh"><p class="label">Branches</p><h2 class="h2" id="br-h">Where the work <strong>happens</strong></h2><p id="br-sub"></p></div>
     <div>
       <div class="blist" id="b-open"></div>
@@ -282,7 +293,7 @@ __HEADER__
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="blk page" aria-labelledby="gr-h" id="graph-sec">
+  <section class="blk page reveal" aria-labelledby="gr-h" id="graph-sec">
     <div class="sh"><p class="label">Commits</p><h2 class="h2" id="gr-h">Every change, <strong>newest first</strong></h2><p id="gr-sub"></p></div>
     <div class="toolbar">
       <label class="search" for="q">
@@ -389,6 +400,7 @@ if(P.fork){
   $('m-fork').innerHTML = `<a class="ul" href="https://github.com/${esc(P.parent||'')}" target="_blank" rel="noopener">${esc(P.parent||'another project')}</a><small>Only my own commits are counted here.</small>`;
 }
 $('m-updated').textContent = niceDate(last, 1);
+$('shot').style.viewTransitionName = `vt-${P.slug}`;
 if(P.shot){ $('shot').hidden = false; $('shot').innerHTML = `<picture><source media="(max-width:560px)" srcset="/${esc(P.shot.replace(/\.jpg$/,'-phone.jpg'))}"><img src="/${esc(P.shot)}" alt="${esc(P.name)}, as it looks today" onerror="this.closest('figure').hidden=true"></picture>`; }
 // README: shown when there is one; long ones open with "Read more"
 const readme = $('readme');

@@ -9,12 +9,12 @@
 .days i[data-l="3"]{background:var(--h3)} .days i[data-l="4"]{background:var(--h4)}
 .days i.first{box-shadow:0 0 0 2px var(--paper-2),0 0 0 3.5px var(--accent)}
 .portrait figcaption{position:absolute;left:24px;right:24px;bottom:20px;font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.4}
-.hero-text{display:flex;flex-direction:column;gap:24px;padding-bottom:6px}
+.hero-text{display:flex;flex-direction:column;gap:24px;padding-bottom:6px;min-width:0}
 .lead{font-size:clamp(17px,1.8vw,19px);line-height:1.55;color:var(--ink-2);max-width:42ch}
 .cta{display:flex;flex-wrap:wrap;gap:12px}
 .aside{font-size:13.5px;color:var(--muted)}
 @media (max-width:760px){
-  .hero{grid-template-columns:1fr;gap:40px;padding-bottom:56px}
+  .hero{grid-template-columns:minmax(0,1fr);gap:40px;padding-bottom:56px}
   .hero-text{order:-1;padding-bottom:0}
   /* On phones the mosaic is a wide, short band so it doesn't fill the screen */
   .portrait{max-height:none;aspect-ratio:4/3}
@@ -22,6 +22,64 @@
   .days i{border-radius:18%}
   .portrait figcaption{left:18px;right:18px;bottom:16px}
 }
+
+/* "Currently building" */
+.building{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;max-width:100%;font-size:13.5px;color:var(--ink-2);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 12px;background:var(--raised)}
+.building b{font-weight:600;color:var(--ink)}
+.building span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.building em{font-style:normal;color:var(--muted);white-space:nowrap;margin-left:-4px}
+.building i{width:7px;height:7px;border-radius:50%;background:var(--add);position:relative;flex:none}
+.building i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--add);animation:pulse 2.4s ease-out infinite}
+.building:hover{border-color:var(--ink-2)}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(3);opacity:0}}
+
+/* Featured tools as swipeable cards (phones only) */
+.rail,.dots{display:none}
+@media (max-width:560px){
+  .rail{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-20px;padding:4px 20px 6px;scroll-padding-inline:20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .rail::-webkit-scrollbar{display:none}
+  .rcard{flex:0 0 84%;scroll-snap-align:start;display:flex;flex-direction:column;aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:#141413;text-decoration:none;color:#F1F0E9;box-shadow:0 18px 40px -22px rgba(20,20,19,.55);transition:transform .2s ease}
+  .rcard:active{transform:scale(.98)}
+  .rc-img{position:relative;flex:1;overflow:hidden}
+  .rc-img::after{content:"";position:absolute;left:0;right:0;bottom:0;height:56px;background:linear-gradient(to bottom,transparent,#141413)}
+  .rcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center}
+  .rcard .rc-cover{position:absolute;inset:0;background:radial-gradient(120% 80% at 80% 10%,#3a3121 0%,#141413 65%)}
+  .rc-days{position:absolute;left:24px;right:24px;top:24px;display:grid;gap:5px}
+  .rc-days i{aspect-ratio:1;border-radius:22%;background:#4A3E1F}
+  .rc-days i[data-l="2"]{background:#7C6427} .rc-days i[data-l="3"]{background:#B48E35} .rc-days i[data-l="4"]{background:#EAC567}
+  .rcard .rc-text{padding:4px 20px 20px;display:flex;flex-direction:column;gap:6px}
+  .rcard h3{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.1;color:#F1F0E9}
+  .rcard p{font-size:14px;line-height:1.45;color:rgba(241,240,233,.78);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .rcard .rc-tag{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:#D6AF5F;border:1px solid rgba(214,175,95,.45);border-radius:999px;padding:2px 9px;margin-bottom:4px}
+  .dots{display:flex;justify-content:center;gap:7px;margin-top:-10px}
+  .dots i{width:6px;height:6px;border-radius:3px;background:var(--line);transition:width .25s ease,background .25s}
+  .dots i.on{width:18px;background:var(--accent)}
+  #grid .work.featured{display:none}
+}
+
+/* The journey as a story, by year (phones only) */
+.story{display:none}
+@media (max-width:640px){
+  #tl{display:none}
+  #story{display:flex;flex-direction:column;gap:30px}
+  .story .yr{display:grid;grid-template-columns:52px 1fr;gap:0 12px}
+  .story .y{font-family:var(--serif);font-size:22px;line-height:1.1;color:var(--accent);padding-top:2px}
+  .story ol{list-style:none;margin:0;padding:0 0 0 18px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:20px}
+  .story li{position:relative}
+  .story li::before{content:"";position:absolute;left:-23px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--paper);border:1.5px solid var(--accent)}
+  .story li.live::before{background:var(--accent)}
+  .story a{display:flex;flex-direction:column;gap:3px;text-decoration:none}
+  .story b{font-size:16.5px;font-weight:500}
+  .story span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .story .strip{position:relative;height:10px;margin-top:6px;background:linear-gradient(var(--line),var(--line)) center/100% 1px no-repeat}
+  .story .strip i{position:absolute;top:1px;bottom:1px;width:2px;margin-left:-1px;background:var(--accent)}
+}
+
+/* The ending */
+.end{padding-block:90px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
+.end .h2{max-width:22ch}
+.end .contact{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-top:4px}
+@media (max-width:700px){.end{align-items:flex-start;text-align:left;padding-block:64px 0}.end .contact{flex-direction:column;justify-content:flex-start}}
 
 /* Sections */
 .block{padding-block:84px;display:flex;flex-direction:column;gap:30px}
@@ -136,6 +194,7 @@ __HEADER__
   <section class="hero page">
     <figure class="portrait rise" id="portrait" aria-label="Portrait"></figure>
     <div class="hero-text">
+      <a class="building rise" id="now" hidden></a>
       <h1 class="display rise d1" id="headline"></h1>
       <p class="lead rise d2" id="intro"></p>
       <div class="cta rise d3" id="cta"></div>
@@ -145,7 +204,7 @@ __HEADER__
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="block page" aria-labelledby="why">
+  <section class="block page reveal" aria-labelledby="why">
     <p class="statement" id="why"></p>
     <div class="prose">
       <p id="why-intro"></p>
@@ -156,15 +215,17 @@ __HEADER__
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="block page" aria-labelledby="work-h" id="work">
+  <section class="block page reveal" aria-labelledby="work-h" id="work">
     <div class="head"><p class="label">Recent work</p><h2 class="h2" id="work-h">Things I've built, and <strong>still use</strong></h2></div>
+    <div class="rail" id="rail" aria-label="Tools I use every day"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
     <div class="grid3" id="grid"></div>
     <a class="more-link" href="/work/" id="all-work"></a>
   </section>
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="block page" aria-labelledby="num-h">
+  <section class="block page reveal" aria-labelledby="num-h" id="numbers">
     <div class="head"><p class="label">By the numbers</p><h2 class="h2" id="num-h"></h2></div>
     <div class="figures" id="figures"></div>
     <div class="heat">
@@ -179,24 +240,31 @@ __HEADER__
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="block page" aria-labelledby="j-h">
+  <section class="block page reveal" aria-labelledby="j-h" id="journey">
     <div class="head"><p class="label">The journey</p><h2 class="h2" id="j-h"></h2></div>
     <div class="tl" id="tl">
       <div class="tl-axis" id="tl-axis"></div>
       <div class="tl-rows" id="tl-rows"></div>
     </div>
+    <div class="story" id="story"></div>
   </section>
 
   <div class="page"><hr class="rule"></div>
 
-  <section class="block page" aria-labelledby="me-h" id="about-me">
+  <section class="block page reveal" aria-labelledby="me-h" id="about-me">
     <div class="about">
       <div class="head"><p class="label">More about me</p><h2 class="h2" id="me-h"></h2></div>
       <div class="prose">
         <div id="about"></div>
-        <ul class="contact" id="contact"></ul>
       </div>
     </div>
+  </section>
+
+  <section class="end page reveal" aria-labelledby="end-h" id="contact-me">
+    <p class="label">Say hello</p>
+    <h2 class="h2" id="end-h">Have a problem that deserves a tool? <strong>Let's talk.</strong></h2>
+    <div class="cta" id="end-cta"></div>
+    <ul class="contact" id="contact"></ul>
   </section>
 </main>
 __FOOTER__
@@ -248,6 +316,16 @@ PR.forEach(p=>Object.entries(p.days).forEach(([ds,n])=>{ perDay[ds]=(perDay[ds]|
 const firstDay = PR.map(p=>p.first).sort()[0];
 
 /* ---------- Hero ---------- */
+// "Currently building": the project with the newest commit, if it was recent
+const newest = [...PR].sort((a,b)=>b.last.localeCompare(a.last))[0];
+if(newest && dayNum(TODAY) - dayNum(newest.last) <= 14){
+  const gap = dayNum(TODAY) - dayNum(newest.last);
+  const when = gap===0 ? 'today' : gap===1 ? 'yesterday' : `${gap} days ago`;
+  $('now').hidden = false;
+  $('now').href = `/projects/${newest.slug}/`;
+  $('now').innerHTML = `<i></i><span>Now building <b>${esc(newest.name)}</b></span><em>· ${when}</em>`;
+  $('now').title = `Last commit ${when}`;
+}
 $('headline').innerHTML = bold(ME.headline);
 $('intro').textContent = ME.intro;
 $('cta').innerHTML = (ME.email ? `<a class="btn" href="mailto:${esc(ME.email)}">Email me</a>` : '')
@@ -292,8 +370,8 @@ function work(p){
   // Phones get the phone-sized screenshot; no screenshot means a cover with the name (initials on phones)
   const img = p.shot ? `<picture><source media="(max-width:560px)" srcset="/${p.shot.replace(/\.jpg$/,'-phone.jpg')}"><img src="/${p.shot}" alt="" loading="lazy" onerror="this.closest('.pic').classList.replace('shot','noshot')"></picture>` : '';
   const initials = p.name.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join('');
-  return `<a class="work" href="/projects/${p.slug}/">
-    <span class="pic ${p.shot?'shot':'noshot'}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span><em aria-hidden="true">${esc(initials)}</em></span></span>
+  return `<a class="work${p.featured?' featured':''}" href="/projects/${p.slug}/">
+    <span class="pic ${p.shot?'shot':'noshot'}" style="view-transition-name:vt-${p.slug}">${img}<span class="cover"><b>${esc(p.name)}</b><span>${l?`<i style="background:${langColor(l)}"></i>${esc(l)}`:''}</span><em aria-hidden="true">${esc(initials)}</em></span></span>
     <div class="txt"><h3><span>${esc(p.name)}</span><small>${p.fork?'fork · ':''}${recent(p)?'active':p.last.slice(0,4)}</small></h3>
     <p>${esc(p.tagline)}</p></div>
   </a>`;
@@ -301,6 +379,27 @@ function work(p){
 const SHOW = 6;
 $('grid').innerHTML = PR.slice(0,SHOW).map(work).join('');
 $('all-work').textContent = PR.length > SHOW ? `See all ${PR.length} projects →` : 'See all work →';
+
+// On phones the tools I use every day are big cards you swipe through
+const feats = PR.filter(p=>p.featured);
+$('rail').innerHTML = feats.map(p=>{
+  const img = p.shot ? `<img src="/${p.shot.replace(/\.jpg$/,'-phone.jpg')}" alt="" loading="lazy" onerror="this.remove()">` : '';
+  const initials = p.name.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+  return `<a class="rcard" href="/projects/${p.slug}/" style="view-transition-name:vt-${p.slug}">
+    <span class="rc-img"><span class="rc-cover">${p.shot ? '' : (()=>{
+      // No screenshot: the cover is this project's own mosaic of building days
+      const ds = Object.keys(p.days).sort().slice(-96), cols = Math.max(8, Math.ceil(Math.sqrt(ds.length*0.8)));
+      return `<span class="rc-days" style="grid-template-columns:repeat(${cols},1fr)">${ds.map(d=>`<i data-l="${Math.max(1,level(p.days[d]))}"></i>`).join('')}</span>`;
+    })()}</span>${img}</span>
+    <span class="rc-text">${recent(p)?'<span class="rc-tag">in use · active</span>':'<span class="rc-tag">in use</span>'}<h3>${esc(p.name)}</h3><p>${esc(p.tagline)}</p></span>
+  </a>`;
+}).join('');
+$('dots').innerHTML = feats.map((_,i)=>`<i${i===0?' class="on"':''}></i>`).join('');
+$('rail').addEventListener('scroll', ()=>{
+  const rail = $('rail'), card = rail.firstElementChild; if(!card) return;
+  const i = Math.round(rail.scrollLeft / (card.offsetWidth + 14));
+  [...$('dots').children].forEach((d,k)=>d.classList.toggle('on', k===Math.min(i, feats.length-1)));
+}, {passive:true});
 
 /* ---------- Numbers ---------- */
 const totalCommits = PR.reduce((s,p)=>s+p.commits,0);
@@ -318,6 +417,25 @@ $('figures').innerHTML = [
   [`−${fmt(removed)}`,'Lines removed','d'],
   [shownLangs.length,'Languages'],
 ].map(([v,k,c])=>`<div class="fig"><b class="${c||''}">${v}</b><span>${k}</span></div>`).join('');
+// The numbers count up the first time they scroll into view
+if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const figs = $('figures');
+  const io = new IntersectionObserver(entries=>{
+    if(!entries.some(e=>e.isIntersecting)) return;
+    io.disconnect();
+    figs.querySelectorAll('b').forEach(b=>{
+      const text = b.textContent, m = text.match(/^(\D*)([\d,]+)(.*)$/); if(!m) return;
+      const goal = +m[2].replace(/,/g,''), t0 = performance.now(), dur = 1100;
+      const tick = now => {
+        const k = Math.min(1, (now-t0)/dur), eased = 1 - Math.pow(1-k, 3);
+        b.textContent = m[1] + fmt(Math.round(goal*eased)) + m[3];
+        if(k < 1) requestAnimationFrame(tick); else b.textContent = text;
+      };
+      requestAnimationFrame(tick);
+    });
+  }, {threshold:.35});
+  io.observe(figs);
+}
 
 // Heatmap: the last 12 months, or the last 6 on a phone so each day is big enough to see
 const phone = matchMedia('(max-width:560px)').matches;
@@ -401,6 +519,13 @@ $('tl-rows').addEventListener('pointerover', e=>{ const r=e.target.closest('.tl-
   showTip(e, `<b>${esc(p.name)}</b><br>${span(p)} · ${plural(Object.keys(p.days).length,'day')} of work · ${plural(p.commits,'commit')}`); });
 $('tl-rows').addEventListener('pointermove', e=>{ if(!tip.hidden) moveTip(e); });
 $('tl-rows').addEventListener('pointerout', e=>{ if(!e.relatedTarget?.closest?.('.tl-row')) hideTip(); });
+// On phones the journey reads as a story: one entry per project, grouped by the year it started
+const byYear = {};
+byStart.forEach(p=>{ (byYear[p.first.slice(0,4)] ||= []).push(p); });
+$('story').innerHTML = Object.entries(byYear).map(([y, list])=>`<div class="yr"><span class="y">${y}</span><ol>${list.map(p=>{
+  const ticks = Object.keys(p.days).map(ds=>`<i style="left:${pos(ds)}%;opacity:${Math.min(1,.35+p.days[ds]/8)}"></i>`).join('');
+  return `<li class="${recent(p)?'live':''}"><a href="/projects/${p.slug}/"><b>${esc(p.name)}</b><span>${span(p)} · ${plural(p.commits,'commit')}</span><span class="strip">${ticks}</span></a></li>`;
+}).join('')}</ol></div>`).join('');
 $('j-h').innerHTML = `${PR.length} projects over ${Math.max(1,Math.round((dayNum(TODAY)-dayNum(firstDay))/30.4))} months, <strong>oldest first</strong>.`;
 
 /* ---------- About ---------- */
@@ -410,6 +535,7 @@ const MAIL_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" s
 const GH_ICON = '<svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
 $('contact').innerHTML = (ME.email ? `<li><a href="mailto:${esc(ME.email)}">${MAIL_ICON}<span>${esc(ME.email)}</span></a><button class="copy" type="button" id="copy-mail">copy</button></li>` : '')
   + `<li><a href="${ghUrl}" target="_blank" rel="noopener">${GH_ICON}<span>github.com/${esc(D.owner)}</span></a></li>`;
+$('end-cta').innerHTML = (ME.email ? `<a class="btn" href="mailto:${esc(ME.email)}">Email me</a>` : '') + `<a class="btn line" href="${ghUrl}" target="_blank" rel="noopener">See my GitHub</a>`;
 $('copy-mail')?.addEventListener('click', ()=>{
   navigator.clipboard.writeText(ME.email).then(()=>toast('Email address copied')).catch(()=>{
     const r=document.createRange(); r.selectNodeContents(document.querySelector('.contact a span')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); });

@@ -55,6 +55,21 @@ FAVICON = (
 # ---------- GitHub and git ----------
 
 def api(path: str):
+    # For local builds: set PORTFOLIO_API_CACHE to a folder and GitHub's answers are kept
+    # there, so rebuilding while you work doesn't run into GitHub's hourly limit.
+    cache = os.environ.get("PORTFOLIO_API_CACHE")
+    if cache:
+        file = Path(cache) / (re.sub(r"[^A-Za-z0-9]+", "_", path) + ".json")
+        if file.exists():
+            return json.loads(file.read_text(encoding="utf-8"))
+        data = _fetch(path)
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(json.dumps(data), encoding="utf-8")
+        return data
+    return _fetch(path)
+
+
+def _fetch(path: str):
     request = urllib.request.Request(
         f"https://api.github.com{path}",
         headers={"Accept": "application/vnd.github+json", "User-Agent": f"{OWNER}-portfolio"},
@@ -231,7 +246,8 @@ def chrome(current: str, version: str, updated: str) -> dict:
     values = {
         "__NAME__": profile["name"], "__SUBTITLE__": profile.get("subtitle", ""),
         "__GITHUB__": OWNER, "__TAGLINE__": re.sub(r"\*\*", "", profile["headline"]),
-        "__MAIL_LINK__": f'<a class="mail" href="mailto:{email}">{email}</a>' if email else "",
+        "__MAIL_LINK__": (f'<a class="mail" href="mailto:{email}"><span class="long">{email}</span>'
+                          '<span class="short">Email</span></a>') if email else "",
         "__MAIL_ITEM__": f'<li><a href="mailto:{email}">Email</a></li>' if email else "",
         "__WORK_CURRENT__": 'aria-current="page"' if current == "work" else "",
         "__VERSION__": version[:7] or "local",
