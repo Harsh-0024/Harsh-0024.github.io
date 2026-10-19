@@ -496,7 +496,8 @@ $('llist').innerHTML = lrows.map(([l,p])=>`<span><i style="background:${l==='Oth
 /* ---------- Journey ---------- */
 const t0 = dayNum(firstDay.slice(0,7)+'-01'), t1 = dayNum(TODAY)+10;
 const pos = ds => ((dayNum(ds)-t0)/(t1-t0)*100);
-const byStart = [...PR].sort((a,b)=>a.first.localeCompare(b.first));
+// Newest at the top, like a CV: what I'm building now comes first
+const byStart = [...PR].sort((a,b)=>b.first.localeCompare(a.first));
 let axis='', grid='';
 for(let y=+firstDay.slice(0,4); y<=+TODAY.slice(0,4); y++){
   for(let m=0; m<12; m+=6){
@@ -522,11 +523,11 @@ $('tl-rows').addEventListener('pointerout', e=>{ if(!e.relatedTarget?.closest?.(
 // On phones the journey reads as a story: one entry per project, grouped by the year it started
 const byYear = {};
 byStart.forEach(p=>{ (byYear[p.first.slice(0,4)] ||= []).push(p); });
-$('story').innerHTML = Object.entries(byYear).map(([y, list])=>`<div class="yr"><span class="y">${y}</span><ol>${list.map(p=>{
+$('story').innerHTML = Object.entries(byYear).sort((a,b)=>b[0].localeCompare(a[0])).map(([y, list])=>`<div class="yr"><span class="y">${y}</span><ol>${list.map(p=>{
   const ticks = Object.keys(p.days).map(ds=>`<i style="left:${pos(ds)}%;opacity:${Math.min(1,.35+p.days[ds]/8)}"></i>`).join('');
   return `<li class="${recent(p)?'live':''}"><a href="/projects/${p.slug}/"><b>${esc(p.name)}</b><span>${span(p)} · ${plural(p.commits,'commit')}</span><span class="strip">${ticks}</span></a></li>`;
 }).join('')}</ol></div>`).join('');
-$('j-h').innerHTML = `${PR.length} projects over ${Math.max(1,Math.round((dayNum(TODAY)-dayNum(firstDay))/30.4))} months, <strong>oldest first</strong>.`;
+$('j-h').innerHTML = `${PR.length} projects over ${Math.max(1,Math.round((dayNum(TODAY)-dayNum(firstDay))/30.4))} months, <strong>newest first</strong>.`;
 
 /* ---------- About ---------- */
 $('me-h').innerHTML = `Building since <strong>${MONTHS_L[+firstDay.slice(5,7)-1]} ${firstDay.slice(0,4)}</strong>.`;
